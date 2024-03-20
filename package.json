@@ -1,0 +1,21 @@
+{
+  "name": "nodejs_todos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "nodemon --watch .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "nodemon": "^3.1.0",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "joi": "^17.12.2",
+    "ts-node": "^10.9.2"
+  }
+}
