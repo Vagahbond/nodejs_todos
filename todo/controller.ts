@@ -4,8 +4,11 @@ import { toDoSchema, updateToDoSchema } from "./model";
 
 const controller = Router();
 
-controller.get("/", (req, res) => {
+controller.get("/", (req, res, next) => {
+  const userId = req.jwt.payload;
+  console.log(userId);
   res.json(todoRepository.getAll());
+  next();
 });
 
 controller.get("/:id", (req, res) => {
@@ -22,9 +25,7 @@ controller.post("/", (req, res) => {
   const { error, value } = toDoSchema.validate(req.body);
 
   if (error) {
-    res.status(400);
-    res.json({ message: error.message });
-    return;
+    throw error;
   }
 
   res.status(201).json(todoRepository.add(value));
