@@ -1,7 +1,7 @@
-import type IRepository from "./repository";
-import { type IToDo } from "./todoModel";
+import { type IToDo } from "./model";
+import IRepository from "../repository";
 
-export class ToDoListRepository implements IRepository<IToDo> {
+export class TodoRepository implements IRepository<IToDo> {
   todos: IToDo[];
 
   constructor() {
@@ -42,4 +42,4 @@ export class ToDoListRepository implements IRepository<IToDo> {
   }
 }
 
-export default new ToDoListRepository();
+export default new TodoRepository();
