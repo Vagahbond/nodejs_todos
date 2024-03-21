@@ -6,13 +6,15 @@ import logsMiddleware from "./utils/logsHandler";
 import bodyParser from "body-parser";
 import jwt from "jwt-express";
 import errorHandler from "./utils/errorHandler";
+import authorisationMiddleware from "./utils/authorisationMiddleware";
+import { getConfig } from "./utils/configHandler";
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(logsMiddleware);
 app.use(
-  jwt.init("secret", {
+  jwt.init(getConfig().jwtSecret, {
     cookies: false,
   }),
 );

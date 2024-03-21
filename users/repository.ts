@@ -21,6 +21,10 @@ export class UserRepository implements IRepository<IUser> {
     return this.users[id - 1];
   }
 
+  getBy(attribute: string, value: string): IUser | undefined {
+    return this.users.find((u) => (u as any)[attribute] == value);
+  }
+
   put(id: number, item: any): void {
     this.users[id - 1] = {
       ...this.users[id - 1],
