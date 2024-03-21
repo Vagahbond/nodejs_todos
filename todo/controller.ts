@@ -22,7 +22,7 @@ controller.get("/:id", (req, res) => {
   res.json(todo);
 });
 
-controller.post("/", (req, res) => {
+controller.post("/",authorisationMiddleware(["staff", "admin"]), (req, res) => {
   const { error, value } = toDoSchema.validate(req.body);
 
   if (error) {
