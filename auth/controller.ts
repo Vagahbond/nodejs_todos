@@ -21,6 +21,7 @@ controller.post("/login", (req, res) => {
 
   const token = res.jwt({
     userId: user.id,
+    role: user.role,
   });
 
   res.json(token);
