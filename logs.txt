@@ -79,3 +79,17 @@ Accepted request at: 2024-03-21T11:31:34.218Z - method: POST - route: undefined-
 Accepted request at: 2024-03-21T11:32:01.061Z - method: POST - route: undefined- issuer: "::ffff:127.0.0.1" - payload: [object Object]
 Accepted request at: 2024-03-21T11:38:07.133Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
 Accepted request at: 2024-03-21T11:38:25.384Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T09:50:42.926Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T09:52:03.265Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T09:53:57.521Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T09:54:29.913ZAccepted request at: 2024-03-22T09:54:49.574ZAccepted request at: 2024-03-22T09:57:13.298ZAccepted request at: 2024-03-22T09:57:50.806Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T09:57:56.352Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T09:58:22.237ZAccepted request at: 2024-03-22T09:58:55.359ZAccepted request at: 2024-03-22T09:59:07.089Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T09:59:13.307Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T10:00:38.641Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T10:03:48.694Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T10:04:02.564Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T10:08:33.420Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T10:09:01.409Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"
+Accepted request at: 2024-03-22T10:09:11.934Z - method: POST - route: undefined- issuer: "::ffff:127.0.0.1" - payload: [object Object]
+Accepted request at: 2024-03-22T10:09:20.534Z - method: GET - route: undefined- issuer: "::ffff:127.0.0.1"

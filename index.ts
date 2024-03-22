@@ -6,8 +6,18 @@ import logsMiddleware from "./utils/logsHandler";
 import bodyParser from "body-parser";
 import jwt from "jwt-express";
 import errorHandler from "./utils/errorHandler";
-import authorisationMiddleware from "./utils/authorisationMiddleware";
 import { getConfig } from "./utils/configHandler";
+import { connectDatabase } from "./utils/dbHandler";
+import mongoose from "mongoose";
+
+const username = "root"
+const password = "root";
+const host = "localhost";
+const port = 27017;
+const database = "my_db";
+mongoose.connect(
+  `mongodb://${username}:${password}@${host}:${port}`,
+);
 
 const app = express();
 
@@ -19,7 +29,7 @@ app.use(
   }),
 );
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({ message: "Hello world!" });
 });
 
