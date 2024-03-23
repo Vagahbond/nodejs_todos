@@ -7,17 +7,6 @@ import bodyParser from "body-parser";
 import jwt from "jwt-express";
 import errorHandler from "./utils/errorHandler";
 import { getConfig } from "./utils/configHandler";
-import { connectDatabase } from "./utils/dbHandler";
-import mongoose from "mongoose";
-
-const username = "root"
-const password = "root";
-const host = "localhost";
-const port = 27017;
-const database = "my_db";
-mongoose.connect(
-  `mongodb://${username}:${password}@${host}:${port}`,
-);
 
 const app = express();
 
@@ -35,7 +24,7 @@ app.get("/", (_req, res) => {
 
 app.use("/todos", todoController);
 app.use("/users", userController);
-app.use("/auth", authController);
+// app.use("/auth", authController);
 
 app.use(errorHandler);
 

@@ -1,67 +1,111 @@
-
 import { Router } from "express";
-import userRepository from "./repository";
-import { UserSchema, UpdateUserSchema } from "./model";
+import authorize from "../utils/authorisationMiddleware";
+import { Role } from "../users/model";
+import { IUser, CreateUserValidationSchema } from "./model";
+import repository from "./repository";
 
 const controller = Router();
 
-controller.get("/", (req, res, next) => {
-  const userId = req.jwt.payload;
-  console.log(userId);
-  res.json(userRepository.getAll());
-  next();
+controller.get("/", authorize([Role.Admin]), (_, res) => {
+  repository
+    .getAll()
+    .then((users: IUser[]) => {
+      res.json(users);
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
 });
 
-controller.get("/:id", (req, res) => {
-  const user = userRepository.get(Number.parseInt(req.params.id));
-
-  if (!user) {
-    res.status(404).json({ message: "User does not exist" });
+controller.get("/:id", authorize(), (req, res) => {
+  if (
+    req.jwt.payload.role === Role.User &&
+    req.params.id === req.jwt.payload.id
+  ) {
+    throw new Error("You cannot look at other people's profile");
   }
 
-  res.json(user);
+  repository
+    .get(req.params.id)
+    .then((user: IUser) => {
+      res.json(user);
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
 });
 
-controller.post("/", (req, res) => {
-  const { error, value } = UserSchema.validate(req.body);
+controller.post("/", authorize([Role.Admin]), (req, res) => {
+  const { value, error } = CreateUserValidationSchema.validate(req.body);
 
   if (error) {
     throw error;
   }
 
-  res.status(201).json(userRepository.add(value));
+  repository
+    .add(value)
+    .then((user: IUser) => {
+      res.status(201).json(user);
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
 });
 
-controller.patch("/:id", (req, res) => {
-  const user = userRepository.get(Number.parseInt(req.params.id));
-
-  if (!user) {
-    res.status(404);
-    res.json({ message: "User does not exist" });
-    return;
-  }
-
-  const { error, value } = UpdateUserSchema.validate(req.body);
+controller.put("/:id", authorize(), (req, res) => {
+  const { value, error } = CreateUserValidationSchema.validate(req.body);
 
   if (error) {
-    res.status(400);
-    res.json({ message: error.message });
-    return;
+    throw error;
   }
 
-  res.json(userRepository.put(Number.parseInt(req.params.id), value));
+  repository
+    .get(req.params.id)
+    .then((user: IUser) => {
+      if (
+        user._id.toString() !== req.jwt.payload.id &&
+        req.jwt.payload.role === Role.User
+      ) {
+        throw new Error("You cannot modify other people's profile");
+      }
+
+      repository
+        .put(req.params.id, value)
+        .then((user: IUser) => {
+          res.json(user);
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
 });
 
 controller.delete("/:id", (req, res) => {
-  const user = userRepository.get(Number.parseInt(req.params.id));
-  if (!user) {
-    res.status(404);
-    res.json({ message: "User does not exist" });
-    return;
-  }
+  repository
+    .get(req.params.id)
+    .then((user: IUser) => {
+      if (
+        user._id.toString() !== req.jwt.payload.id &&
+        req.jwt.payload.role === Role.User
+      ) {
+        throw new Error("You cannot modify other people's profile");
+      }
 
-  userRepository.delete(Number.parseInt(req.params.id));
-  res.status(201).send();
+      repository
+        .deleteOne(req.params.id)
+        .then(() => {
+          res.status(204).send();
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
 });
 
 export default controller;

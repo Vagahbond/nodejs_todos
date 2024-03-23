@@ -1,56 +1,123 @@
 import { Router } from "express";
-import { createOne, getAll, getOneById } from "./repository";
+import authorize from "../utils/authorisationMiddleware";
+import { Role } from "../users/model";
+import { ITodo, createTodoValidationSchema } from "./model";
+import repository from "./repository";
 
 const controller = Router();
 
-controller.get("/", (req, res) => {
-  getAll().then((todos) => {
-    res.json(todos);
-  });
+controller.get("/", authorize(), (req, res) => {
+  switch (req.jwt.payload.role) {
+    case Role.Admin:
+      repository
+        .getAll()
+        .then((todos: ITodo[]) => {
+          res.json(todos);
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
+
+      break;
+
+    case Role.User:
+      repository
+        .getForUser(req.jwt.payload.id)
+        .then((todos: ITodo[]) => {
+          res.json(todos);
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
+
+      break;
+  }
 });
 
-controller.get("/:id", (req, res) => {
-  getOneById(req.params.id).then((todo) => {
+controller.get("/:id", authorize(), (req, res) => {
+  repository.get(req.params.id).then((todo: ITodo) => {
+    if (
+      todo._id.toString() !== req.jwt.payload.id &&
+      req.jwt.payload.role === Role.User
+    ) {
+      throw new Error("You cannot look at other people's todo");
+    }
+
     res.json(todo);
   });
 });
 
-controller.post("/", (req, res) => {
-  createOne(req.body).then((_) => {
-    res.status(201).send();
-  });
-});
-/*
-controller.patch("/:id", (req, res) => {
-  const todo = todoRepository.get(Number.parseInt(req.params.id));
-
-  if (!todo) {
-    res.status(404);
-    res.json({ message: "Todo does not exist" });
-    return;
-  }
-
-  const { error, value } = updateToDoSchema.validate(req.body);
+controller.post("/", authorize(), (req, res) => {
+  const { value, error } = createTodoValidationSchema.validate(req.body);
 
   if (error) {
-    res.status(400);
-    res.json({ message: error.message });
-    return;
+    throw error;
   }
 
-  res.json(todoRepository.put(Number.parseInt(req.params.id), value));
+  repository
+    .add(value)
+    .then((todo: ITodo) => {
+      res.status(201).json(todo);
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
+});
+
+controller.put("/:id", authorize(), (req, res) => {
+  const { value, error } = createTodoValidationSchema.validate(req.body);
+
+  if (error) {
+    throw error;
+  }
+
+  repository
+    .get(req.params.id)
+    .then((todo: ITodo) => {
+      if (
+        req.jwt.payload.role === Role.User &&
+        todo.creator !== req.jwt.payload.id
+      ) {
+        throw new Error("You cannot modify other people's todo");
+      }
+
+      repository
+        .put(req.params.id, value)
+        .then((todo: ITodo) => {
+          res.json(todo);
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
 });
 
 controller.delete("/:id", (req, res) => {
-  const todo = todoRepository.get(Number.parseInt(req.params.id));
-  if (!todo) {
-    res.status(404);
-    res.json({ message: "Todo does not exist" });
-    return;
-  }
+  repository
+    .get(req.params.id)
+    .then((todo: ITodo) => {
+      if (
+        req.jwt.payload.role === Role.User &&
+        todo.creator.toString() !== req.jwt.payload.id
+      ) {
+        throw new Error("You cannot modify other people's todo");
+      }
 
-  todoRepository.delete(Number.parseInt(req.params.id));
-  res.status(201).send();
+      repository
+        .deleteOne(req.params.id)
+        .then(() => {
+          res.status(204).send();
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
+    })
+    .catch((err: Error) => {
+      throw err;
+    });
 });
-*/
+
 export default controller;

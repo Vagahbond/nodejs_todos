@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { UserSchema } from "../users/model";
+import { CreateUserValidationSchema } from "../users/model";
 import userRepository from "../users/repository";
 
 const controller = Router();
@@ -9,7 +9,7 @@ controller.post("/login", (req, res) => {
     throw new Error();
   }
 
-  const user = userRepository.getBy("username", req.body.username);
+  const user = userRepository.get("username", req.body.username);
 
   if (!user) {
     throw new Error("User does not exist");
@@ -20,7 +20,7 @@ controller.post("/login", (req, res) => {
   }
 
   const token = res.jwt({
-    userId: user.id,
+    id: user.id,
     role: user.role,
   });
 
@@ -28,9 +28,9 @@ controller.post("/login", (req, res) => {
 });
 
 controller.post("/signin", (req, res) => {
-  const { error, value } = UserSchema.validate(req.body);
+  const { error, value } = CreateUserValidationSchema.validate(req.body);
 
-  if (userRepository.getBy("username", value.username)) {
+  if (userRepository.get("username", value.username)) {
     throw new Error();
   }
 

@@ -1,49 +1,62 @@
-import { type IUser } from "./model";
+import { Role, IUser } from "./model";
 import IRepository from "../repository";
+import mongoose from "mongoose";
 
-export class UserRepository implements IRepository<IUser> {
-  users: IUser[];
+const UserMongoSchema = new mongoose.Schema({
+  username: String,
+  password: {
+    hash: String,
+    salt: String,
+  },
+  role: { type: "string", enum: Object.keys(Role) },
+});
 
-  constructor() {
-    this.users = [];
+const User = mongoose.model("user", UserMongoSchema);
+
+async function getAll(): Promise<IUser[]> {
+  const users = await User.find();
+  return users.map((user) => user.toObject());
+}
+
+async function get(id: string): Promise<IUser> {
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new Error("User not found");
   }
 
-  getAll(): IUser[] {
-    return this.users.map((user, index) => {
-      return {
-        ...user,
-        id: index + 1,
-      };
-    });
+  return user?.toObject();
+}
+
+async function add(attributes: IUser): Promise<IUser> {
+  const user = await new User(attributes).save();
+  return user.toObject();
+}
+
+async function put(id: string, attributes: IUser): Promise<IUser> {
+  const newUser = await User.findByIdAndUpdate(id, attributes);
+
+  if (!newUser) {
+    throw new Error("User not found");
   }
 
-  get(id: number): IUser {
-    return this.users[id - 1];
-  }
+  return newUser?.toObject();
+}
 
-  getBy(attribute: string, value: string): IUser | undefined {
-    return this.users.find((u) => (u as any)[attribute] == value);
-  }
+async function deleteOne(id: string): Promise<void> {
+  const result = await User.findByIdAndDelete(id);
 
-  put(id: number, item: any): void {
-    this.users[id - 1] = {
-      ...this.users[id - 1],
-      ...item,
-    };
-  }
-
-  add(item: IUser): void {
-    this.users.push(item);
-  }
-
-  delete(id: number): boolean {
-    if (this.users[id - 1] === undefined) {
-      return false;
-    }
-    this.users.splice(id - 1, 1);
-
-    return true;
+  if (!result) {
+    throw new Error("User not found");
   }
 }
 
-export default new UserRepository();
+const repository: IRepository<IUser> = {
+  add,
+  get,
+  put,
+  deleteOne,
+  getAll,
+};
+
+export default repository;

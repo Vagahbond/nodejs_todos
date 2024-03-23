@@ -1,18 +1,31 @@
 import joi from "joi";
 
-export interface IUser {
-  id?: number;
-  username: string;
-  password: string;
-  role: "user" | "admin" | "staff";
+export enum Role {
+  User = "user",
+  Admin = "admin",
 }
 
-export const UserSchema = joi.object({
+interface IPassword {
+  hash: string;
+  salt: string;
+}
+
+export interface IUser {
+  _id?: any;
+  username: string;
+  password: IPassword;
+  role: Role;
+}
+
+export const CreateUserValidationSchema = joi.object({
   username: joi.string().alphanum().min(3).required(),
   password: joi.string().min(5).required(),
-  role: joi.string().regex(/user|admin|staff/).required(),
+  role: joi
+    .string()
+    .regex(/user|admin|staff/)
+    .required(),
 });
 
-export const UpdateUserSchema = joi.object({
+export const UpdateUserValidationSchema = joi.object({
   password: joi.string().min(5).required(),
 });

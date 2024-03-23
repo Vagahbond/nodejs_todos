@@ -1,8 +1,7 @@
 export default interface IRepository<T> {
-  getAll: () => T[];
-  get: (id: number) => T;
-  add: (item: T) => void;
-  delete: (id: number) => void;
-  put: (id: number, item: any) => void;
-  getBy?: (attribute: string, value: string) => T | undefined;
+  getAll: () => Promise<T[]>;
+  get: (id: string) => Promise<T>;
+  add: (item: T) => Promise<T>;
+  deleteOne: (id: string) => Promise<void>;
+  put: (id: string, item: any) => Promise<T>;
 }

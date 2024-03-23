@@ -1,20 +1,20 @@
 import joi from "joi";
-import mongoose from "mongoose";
 
-export interface IToDo {
-  id?: string;
+export interface ITodo {
+  _id?: any;
   name: string;
   description: string;
   done: boolean;
+  creator: string;
 }
 
-export const toDoSchema = joi.object({
+export const createTodoValidationSchema = joi.object({
   name: joi.string().max(32).min(3).required().description("Name of the todo"),
   description: joi.string().required().description("Description of the todo"),
   done: joi.boolean().required().description("Is the todo done"),
 });
 
-export const updateToDoSchema = joi
+export const updateTodoValidationSchema = joi
   .object({
     name: joi
       .string()
@@ -26,11 +26,3 @@ export const updateToDoSchema = joi
     done: joi.boolean().optional().description("Is the todo done"),
   })
   .min(1);
-
-export const TodoMongoSchema = new mongoose.Schema({
-  description: String,
-  done: { type: "boolean", default: false },
-  name: String,
-});
-
-export const Todo = mongoose.model("todo", TodoMongoSchema);
