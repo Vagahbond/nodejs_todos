@@ -28,6 +28,16 @@ async function get(id: string): Promise<IUser> {
   return user?.toObject();
 }
 
+async function getByUsername(username: string): Promise<IUser> {
+  const user = await User.findOne({ username });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user?.toObject();
+}
+
 async function add(attributes: IUser): Promise<IUser> {
   const user = await new User(attributes).save();
   return user.toObject();
@@ -51,9 +61,14 @@ async function deleteOne(id: string): Promise<void> {
   }
 }
 
-const repository: IRepository<IUser> = {
+export interface IUserRepository extends IRepository<IUser> {
+  getByUsername: (username: string) => Promise<IUser>;
+}
+
+const repository: IUserRepository = {
   add,
   get,
+  getByUsername,
   put,
   deleteOne,
   getAll,
