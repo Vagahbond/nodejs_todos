@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { ValidationError } from "joi";
-import { JWTExpressError } from "jwt-express";
 
 export default function errorhandler(
   err: Error,
-  req: Request,
+  _: Request,
   res: Response,
   next: NextFunction,
 ) {
@@ -13,6 +11,18 @@ export default function errorhandler(
   }
 
   switch (err.name) {
+    case "UnauthenticatedError":
+      res.status(401).json({
+        message:
+          err.message ?? "You must be authenticated to perform this action.",
+      });
+      break;
+    case "UnauthorizedError":
+      res.status(403).json({
+        message:
+          err.message ?? "You are not authorized to perform this action.",
+      });
+      break;
     case "ValidationError":
       res.status(400).json({ message: err.message });
       break;
@@ -21,6 +31,7 @@ export default function errorhandler(
       break;
 
     default:
+      console.log(err);
       res.status(500).json({ message: "Something went wrong." });
   }
 }
